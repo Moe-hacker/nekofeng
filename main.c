@@ -9,6 +9,7 @@
 #include <unistd.h>
 #define X_SIZE 12
 #define Y_SIZE 2
+#define SLEEP_TIME 200000
 struct LAYER {
   char *layer;
   int x_offset;
@@ -27,6 +28,17 @@ __attribute__((constructor)) void init() {
   x = size.ws_col / 2 - X_SIZE / 2;
   y = size.ws_row / 2 - Y_SIZE / 2;
 }
+
+/*
+__attribute__((constructor)) void debug() {
+  struct winsize size;
+  ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
+  for (short i = 0; i < size.ws_col * size.ws_row; i++) {
+    printf("#");
+  }
+}
+*/
+
 static void clear_layer(struct LAYER *layer) {
   int y_offset = 0;
   int x_offset = 0;
@@ -42,8 +54,8 @@ static void clear_layer(struct LAYER *layer) {
       continue;
     }
     // Unicode.
-    if (layer->layer[i] > 127) {
-      i += 3;
+    if (layer->layer[i] > 0x7f || layer->layer[i] < 0) {
+      i += 2;
     }
     // Color.
     if (layer->layer[i] == '\033') {
@@ -53,6 +65,7 @@ static void clear_layer(struct LAYER *layer) {
           break;
         }
       }
+      continue;
     }
     // Skip space.
     if (layer->layer[i] != ' ') {
@@ -84,29 +97,80 @@ static void print_layer(struct LAYER *layer) {
   }
   fflush(stdout);
 }
-int main() {
-  struct LAYER layer;
-  layer.x_offset = 0;
-  layer.y_offset = 0;
-  layer.layer = "\033[33mhshshshhsh█iyf8fyftf\n    hdhdhshshsh";
-  print_layer(&layer);
-  sleep(1);
-  clear_layer(&layer);
-  sleep(1);
-  print_layer(&layer);
-  sleep(1);
-  struct LAYER layer1;
-  layer1.x_offset = 0;
-  layer1.y_offset = 0;
-  layer1.layer = "\033[33mhshshshhshdjhdhdhiyf8fyftf\n    hhdhehehhdhdhhddhhsgsggshsd>";
-  print_layer(&layer1);
-  sleep(1);
-  clear_layer(&layer1);
-  struct LAYER layer2;
-  layer2.x_offset = 0;
-  layer2.y_offset = 0;
-  layer2.layer = "\033[33mhshshshhsh█iyf8fyftf\n    hd>";
-  print_layer(&layer2);
-  sleep(1);
-  clear_layer(&layer2);
+void load_action(struct ACTION *action) {
+  struct ACTION **p = &action;
+  while ((*p) != NULL) {
+    print_layer((*p)->layer);
+    usleep(SLEEP_TIME);
+    clear_layer((*p)->layer);
+    p = &((*p)->next);
+  }
 }
+void blink_lefteye() {
+  struct ACTION *action;
+  struct ACTION **p = &action;
+  (*p) = malloc(sizeof(struct ACTION));
+  (*p)->layer = malloc(sizeof(struct LAYER));
+  (*p)->layer->x_offset = 5;
+  (*p)->layer->y_offset = 0;
+  (*p)->layer->layer = "  ██████ \n"
+                       "██      ██\n"
+                       "  ██████\n"
+                       "  ██  ██\n"
+                       "  ██████\n";
+  (*p)->next = malloc(sizeof(struct ACTION));
+  p = &((*p)->next);
+  (*p) = malloc(sizeof(struct ACTION));
+  (*p)->layer = malloc(sizeof(struct LAYER));
+  (*p)->layer->x_offset = 5;
+  (*p)->layer->y_offset = 0;
+  (*p)->layer->layer = "\n"
+                       "  ██████ \n"
+                       "██      ██\n"
+                       "  ██  ██\n"
+                       "  ██████\n";
+  (*p)->next = malloc(sizeof(struct ACTION));
+  p = &((*p)->next);
+  (*p) = malloc(sizeof(struct ACTION));
+  (*p)->layer = malloc(sizeof(struct LAYER));
+  (*p)->layer->x_offset = 5;
+  (*p)->layer->y_offset = 0;
+  (*p)->layer->layer = "\n\n"
+                       "  ██████ \n"
+                       "██      ██\n"
+                       "  ██████\n";
+  (*p)->next = malloc(sizeof(struct ACTION));
+  p = &((*p)->next);
+  (*p) = malloc(sizeof(struct ACTION));
+  (*p)->layer = malloc(sizeof(struct LAYER));
+  (*p)->layer->x_offset = 5;
+  (*p)->layer->y_offset = 0;
+  (*p)->layer->layer = "\n\n\n"
+                       "  ██████ \n"
+                       "██████████\n";
+  (*p)->next = malloc(sizeof(struct ACTION));
+  p = &((*p)->next);
+  (*p) = malloc(sizeof(struct ACTION));
+  (*p)->layer = malloc(sizeof(struct LAYER));
+  (*p)->layer->x_offset = 5;
+  (*p)->layer->y_offset = 0;
+  (*p)->layer->layer = "\n\n"
+                       "   ████\n"
+                       "       ██\n"
+                       "  █████\n";
+  (*p)->next = malloc(sizeof(struct ACTION));
+  p = &((*p)->next);
+  (*p)->layer = malloc(sizeof(struct LAYER));
+  (*p)->layer->x_offset = 5;
+  (*p)->layer->y_offset = 0;
+  (*p)->layer->layer = "\n"
+                       "  ████\n"
+                       "      ██\n"
+                       "        ██\n"
+                       "  ██████\n";
+  (*p)->next = NULL;
+  p = &((*p)->next);
+  load_action(action);
+}
+
+int main() { blink_lefteye(); }
