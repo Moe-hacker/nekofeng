@@ -28,17 +28,6 @@ __attribute__((constructor)) void init() {
   x = size.ws_col / 2 - X_SIZE / 2;
   y = size.ws_row / 2 - Y_SIZE / 2;
 }
-
-/*
-__attribute__((constructor)) void debug() {
-  struct winsize size;
-  ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
-  for (short i = 0; i < size.ws_col * size.ws_row; i++) {
-    printf("#");
-  }
-}
-*/
-
 static void clear_layer(struct LAYER *layer) {
   int y_offset = 0;
   int x_offset = 0;
@@ -106,71 +95,66 @@ void load_action(struct ACTION *action) {
     p = &((*p)->next);
   }
 }
-void blink_lefteye() {
-  struct ACTION *action;
+void free_action(struct ACTION *action) {
+  struct ACTION *p = action;
+  while (p != NULL) {
+    struct ACTION *t = p;
+    p = p->next;
+    free(t->layer->layer);
+    free(t->layer);
+    free(t);
+  }
+}
+struct ACTION *add_layer(struct ACTION *action, int x_offset, int y_offset,
+                         char *layer) {
   struct ACTION **p = &action;
+  while (*p != NULL) {
+    p = &((*p)->next);
+  }
   (*p) = malloc(sizeof(struct ACTION));
   (*p)->layer = malloc(sizeof(struct LAYER));
-  (*p)->layer->x_offset = 5;
-  (*p)->layer->y_offset = 0;
-  (*p)->layer->layer = "  ██████ \n"
-                       "██      ██\n"
-                       "  ██████\n"
-                       "  ██  ██\n"
-                       "  ██████\n";
-  (*p)->next = malloc(sizeof(struct ACTION));
-  p = &((*p)->next);
-  (*p) = malloc(sizeof(struct ACTION));
-  (*p)->layer = malloc(sizeof(struct LAYER));
-  (*p)->layer->x_offset = 5;
-  (*p)->layer->y_offset = 0;
-  (*p)->layer->layer = "\n"
-                       "  ██████ \n"
-                       "██      ██\n"
-                       "  ██  ██\n"
-                       "  ██████\n";
-  (*p)->next = malloc(sizeof(struct ACTION));
-  p = &((*p)->next);
-  (*p) = malloc(sizeof(struct ACTION));
-  (*p)->layer = malloc(sizeof(struct LAYER));
-  (*p)->layer->x_offset = 5;
-  (*p)->layer->y_offset = 0;
-  (*p)->layer->layer = "\n\n"
-                       "  ██████ \n"
-                       "██      ██\n"
-                       "  ██████\n";
-  (*p)->next = malloc(sizeof(struct ACTION));
-  p = &((*p)->next);
-  (*p) = malloc(sizeof(struct ACTION));
-  (*p)->layer = malloc(sizeof(struct LAYER));
-  (*p)->layer->x_offset = 5;
-  (*p)->layer->y_offset = 0;
-  (*p)->layer->layer = "\n\n\n"
-                       "  ██████ \n"
-                       "██████████\n";
-  (*p)->next = malloc(sizeof(struct ACTION));
-  p = &((*p)->next);
-  (*p) = malloc(sizeof(struct ACTION));
-  (*p)->layer = malloc(sizeof(struct LAYER));
-  (*p)->layer->x_offset = 5;
-  (*p)->layer->y_offset = 0;
-  (*p)->layer->layer = "\n\n"
-                       "   ████\n"
-                       "       ██\n"
-                       "  █████\n";
-  (*p)->next = malloc(sizeof(struct ACTION));
-  p = &((*p)->next);
-  (*p)->layer = malloc(sizeof(struct LAYER));
-  (*p)->layer->x_offset = 5;
-  (*p)->layer->y_offset = 0;
-  (*p)->layer->layer = "\n"
-                       "  ████\n"
-                       "      ██\n"
-                       "        ██\n"
-                       "  ██████\n";
+  (*p)->layer->x_offset = x_offset;
+  (*p)->layer->y_offset = y_offset;
+  (*p)->layer->layer = strdup(layer);
   (*p)->next = NULL;
-  p = &((*p)->next);
+  return action;
+}
+void blink_lefteye() {
+  struct ACTION *action = NULL;
+  action = add_layer(action, 5, 0,
+                     "  ██████ \n"
+                     "██      ██\n"
+                     "  ██████\n"
+                     "  ██  ██\n"
+                     "  ██████\n");
+  action = add_layer(action, 5, 0,
+                     "\n"
+                     "  ██████ \n"
+                     "██      ██\n"
+                     "  ██  ██\n"
+                     "  ██████\n");
+  action = add_layer(action, 5, 0,
+                     "\n\n"
+                     "  ██████ \n"
+                     "██      ██\n"
+                     "  ██████\n");
+  action = add_layer(action, 5, 0,
+                     "\n\n\n"
+                     "  ██████ \n"
+                     "██████████\n");
+  action = add_layer(action, 5, 0,
+                     "\n\n"
+                     "     ██\n"
+                     "       ██\n"
+                     "  █████\n");
+  action = add_layer(action, 5, 0,
+                     "\n"
+                     "  ████\n"
+                     "      ██\n"
+                     "        ██\n"
+                     "  ██████\n");
   load_action(action);
+  free_action(action);
 }
 
 int main() { blink_lefteye(); }
