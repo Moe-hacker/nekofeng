@@ -12,6 +12,7 @@
 #define SLEEP_TIME 200000
 struct LAYER {
   char *layer;
+  int num;
   int x_offset;
   int y_offset;
 };
@@ -106,13 +107,14 @@ void free_action(struct ACTION *action) {
   }
 }
 struct ACTION *add_layer(struct ACTION *action, int x_offset, int y_offset,
-                         char *layer) {
+                         int num, char *layer) {
   struct ACTION **p = &action;
   while (*p != NULL) {
     p = &((*p)->next);
   }
   (*p) = malloc(sizeof(struct ACTION));
   (*p)->layer = malloc(sizeof(struct LAYER));
+  (*p)->layer->num = num;
   (*p)->layer->x_offset = x_offset;
   (*p)->layer->y_offset = y_offset;
   (*p)->layer->layer = strdup(layer);
@@ -121,33 +123,33 @@ struct ACTION *add_layer(struct ACTION *action, int x_offset, int y_offset,
 }
 void blink_lefteye() {
   struct ACTION *action = NULL;
-  action = add_layer(action, 5, 0,
+  action = add_layer(action, 5, 0, 0,
                      "  ██████ \n"
                      "██      ██\n"
                      "  ██████\n"
                      "  ██  ██\n"
                      "  ██████\n");
-  action = add_layer(action, 5, 0,
+  action = add_layer(action, 5, 0, 1,
                      "\n"
                      "  ██████ \n"
                      "██      ██\n"
                      "  ██  ██\n"
                      "  ██████\n");
-  action = add_layer(action, 5, 0,
+  action = add_layer(action, 5, 0, 2,
                      "\n\n"
                      "  ██████ \n"
                      "██      ██\n"
                      "  ██████\n");
-  action = add_layer(action, 5, 0,
+  action = add_layer(action, 5, 0, 3,
                      "\n\n\n"
                      "  ██████ \n"
                      "██████████\n");
-  action = add_layer(action, 5, 0,
+  action = add_layer(action, 5, 0, 4,
                      "\n\n"
                      "     ██\n"
                      "       ██\n"
                      "  █████\n");
-  action = add_layer(action, 5, 0,
+  action = add_layer(action, 5, 0, 5,
                      "\n"
                      "  ████\n"
                      "      ██\n"
