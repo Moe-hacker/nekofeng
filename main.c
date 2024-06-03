@@ -12,7 +12,6 @@
 #define SLEEP_TIME 200000
 struct LAYER {
   char *layer;
-  int num;
   int x_offset;
   int y_offset;
 };
@@ -28,6 +27,13 @@ __attribute__((constructor)) void init() {
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
   x = size.ws_col / 2 - X_SIZE / 2;
   y = size.ws_row / 2 - Y_SIZE / 2;
+}
+__attribute__((constructor)) void debug() {
+  struct winsize size;
+  ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
+  for (short i = 0; i < size.ws_col * size.ws_row; i++) {
+    printf("#");
+  }
 }
 static void clear_layer(struct LAYER *layer) {
   int y_offset = 0;
@@ -78,8 +84,11 @@ static void print_layer(struct LAYER *layer) {
       printf("\033[%dG", x + layer->x_offset);
       continue;
     }
-    // Skip space.
-    if (layer->layer[i] != ' ') {
+    // '#' means a ' ' to cover the layer under it.
+    if (layer->layer[i] == '#') {
+      printf(" ");
+    } // Skip space.
+    else if (layer->layer[i] != ' ') {
       printf("%c", layer->layer[i]);
     } else {
       printf("\033[1C");
@@ -107,14 +116,13 @@ void free_action(struct ACTION *action) {
   }
 }
 struct ACTION *add_layer(struct ACTION *action, int x_offset, int y_offset,
-                         int num, char *layer) {
+                         char *layer) {
   struct ACTION **p = &action;
   while (*p != NULL) {
     p = &((*p)->next);
   }
   (*p) = malloc(sizeof(struct ACTION));
   (*p)->layer = malloc(sizeof(struct LAYER));
-  (*p)->layer->num = num;
   (*p)->layer->x_offset = x_offset;
   (*p)->layer->y_offset = y_offset;
   (*p)->layer->layer = strdup(layer);
@@ -123,33 +131,33 @@ struct ACTION *add_layer(struct ACTION *action, int x_offset, int y_offset,
 }
 void blink_lefteye() {
   struct ACTION *action = NULL;
-  action = add_layer(action, 5, 0, 0,
+  action = add_layer(action, 5, 0,
                      "  ██████ \n"
                      "██      ██\n"
                      "  ██████\n"
                      "  ██  ██\n"
                      "  ██████\n");
-  action = add_layer(action, 5, 0, 1,
+  action = add_layer(action, 5, 0,
                      "\n"
                      "  ██████ \n"
                      "██      ██\n"
                      "  ██  ██\n"
                      "  ██████\n");
-  action = add_layer(action, 5, 0, 2,
+  action = add_layer(action, 5, 0,
                      "\n\n"
                      "  ██████ \n"
                      "██      ██\n"
                      "  ██████\n");
-  action = add_layer(action, 5, 0, 3,
+  action = add_layer(action, 5, 0,
                      "\n\n\n"
                      "  ██████ \n"
                      "██████████\n");
-  action = add_layer(action, 5, 0, 4,
+  action = add_layer(action, 5, 0,
                      "\n\n"
-                     "     ██\n"
+                     "   ████\n"
                      "       ██\n"
                      "  █████\n");
-  action = add_layer(action, 5, 0, 5,
+  action = add_layer(action, 5, 0,
                      "\n"
                      "  ████\n"
                      "      ██\n"
@@ -159,4 +167,7 @@ void blink_lefteye() {
   free_action(action);
 }
 
-int main() { blink_lefteye(); }
+int main() {
+  blink_lefteye();
+  sleep(1);
+}
