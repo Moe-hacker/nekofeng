@@ -1,42 +1,4 @@
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <termios.h>
-#include <time.h>
-#include <unistd.h>
-#define X_SIZE 12
-#define Y_SIZE 2
-#define SLEEP_TIME 200000
-struct LAYER {
-	char *layer;
-	int x_offset;
-	int y_offset;
-};
-struct ACTION {
-	struct LAYER *layer;
-	struct ACTION *next;
-};
-static int x;
-static int y;
-// init() function for getting window size.
-__attribute__((constructor)) void init()
-{
-	struct winsize size;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
-	x = size.ws_col / 2 - X_SIZE / 2;
-	y = size.ws_row / 2 - Y_SIZE / 2;
-}
-__attribute__((constructor)) void debug()
-{
-	struct winsize size;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
-	for (short i = 0; i < size.ws_col * size.ws_row; i++) {
-		printf("#");
-	}
-}
+#include "include/nekofeng.h"
 static void clear_layer(struct LAYER *layer)
 {
 	int y_offset = 0;
@@ -100,14 +62,26 @@ static void print_layer(struct LAYER *layer)
 	}
 	fflush(stdout);
 }
-void load_action(struct ACTION *action)
+void play_action(struct ACTION *action,int inr)
 {
 	struct ACTION **p = &action;
 	while ((*p) != NULL) {
 		print_layer((*p)->layer);
-		usleep(SLEEP_TIME);
+		usleep(inr);
 		clear_layer((*p)->layer);
 		p = &((*p)->next);
+	}
+}
+void playback_action(struct ACTION *action,int inr){
+	struct ACTION **p = &action;
+	while ((*p)->next != NULL) {
+		p = &((*p)->next);
+	}
+	while ((*p) != NULL) {
+		print_layer((*p)->layer);
+		usleep(inr);
+		clear_layer((*p)->layer);
+		p = &((*p)->prior);
 	}
 }
 void free_action(struct ACTION *action)
@@ -124,7 +98,9 @@ void free_action(struct ACTION *action)
 struct ACTION *add_layer(struct ACTION *action, int x_offset, int y_offset, char *layer)
 {
 	struct ACTION **p = &action;
+	struct ACTION *prior = action;
 	while (*p != NULL) {
+		prior=*p;
 		p = &((*p)->next);
 	}
 	(*p) = malloc(sizeof(struct ACTION));
@@ -133,49 +109,6 @@ struct ACTION *add_layer(struct ACTION *action, int x_offset, int y_offset, char
 	(*p)->layer->y_offset = y_offset;
 	(*p)->layer->layer = strdup(layer);
 	(*p)->next = NULL;
+	(*p)->prior=prior;
 	return action;
-}
-void blink_lefteye()
-{
-	struct ACTION *action = NULL;
-	action = add_layer(action, 5, 0,
-			   "  ██████ \n"
-			   "██      ██\n"
-			   "  ██████\n"
-			   "  ██  ██\n"
-			   "  ██████\n");
-	action = add_layer(action, 5, 0,
-			   "\n"
-			   "  ██████ \n"
-			   "██      ██\n"
-			   "  ██  ██\n"
-			   "  ██████\n");
-	action = add_layer(action, 5, 0,
-			   "\n\n"
-			   "  ██████ \n"
-			   "██      ██\n"
-			   "  ██████\n");
-	action = add_layer(action, 5, 0,
-			   "\n\n\n"
-			   "  ██████ \n"
-			   "██████████\n");
-	action = add_layer(action, 5, 0,
-			   "\n\n"
-			   "   ████\n"
-			   "       ██\n"
-			   "  █████\n");
-	action = add_layer(action, 5, 0,
-			   "\n"
-			   "  ████\n"
-			   "      ██\n"
-			   "        ██\n"
-			   "  ██████\n");
-	load_action(action);
-	free_action(action);
-}
-
-int main()
-{
-	blink_lefteye();
-	sleep(1);
 }
