@@ -62,17 +62,21 @@ static void print_layer(struct LAYER *layer)
 	}
 	fflush(stdout);
 }
-void play_action(struct ACTION *action,int inr)
+void play_action(struct ACTION *action, int inr, int keep)
 {
 	struct ACTION **p = &action;
 	while ((*p) != NULL) {
 		print_layer((*p)->layer);
 		usleep(inr);
+		if ((*p)->next == NULL) {
+			sleep(keep);
+		}
 		clear_layer((*p)->layer);
 		p = &((*p)->next);
 	}
 }
-void playback_action(struct ACTION *action,int inr){
+void playback_action(struct ACTION *action, int inr, int keep)
+{
 	struct ACTION **p = &action;
 	while ((*p)->next != NULL) {
 		p = &((*p)->next);
@@ -80,6 +84,9 @@ void playback_action(struct ACTION *action,int inr){
 	while ((*p) != NULL) {
 		print_layer((*p)->layer);
 		usleep(inr);
+		if ((*p)->prior == NULL) {
+			sleep(keep);
+		}
 		clear_layer((*p)->layer);
 		p = &((*p)->prior);
 	}
@@ -100,7 +107,7 @@ struct ACTION *add_layer(struct ACTION *action, int x_offset, int y_offset, char
 	struct ACTION **p = &action;
 	struct ACTION *prior = action;
 	while (*p != NULL) {
-		prior=*p;
+		prior = *p;
 		p = &((*p)->next);
 	}
 	(*p) = malloc(sizeof(struct ACTION));
@@ -109,6 +116,6 @@ struct ACTION *add_layer(struct ACTION *action, int x_offset, int y_offset, char
 	(*p)->layer->y_offset = y_offset;
 	(*p)->layer->layer = strdup(layer);
 	(*p)->next = NULL;
-	(*p)->prior=prior;
+	(*p)->prior = prior;
 	return action;
 }
