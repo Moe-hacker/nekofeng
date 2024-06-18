@@ -8,6 +8,7 @@
 #include <termios.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdbool.h>
 #define X_SIZE 36
 #define Y_SIZE 2
 struct LAYER {
@@ -31,3 +32,5 @@ struct ACTION *add_layer(struct ACTION *action, int x_offset, int y_offset, char
 void blink_lefteye(int keep);
 void close_and_open_lefteye(int keep);
 void close_and_open_righteye(int keep);
+void typewrite_layer(struct LAYER *layer, int inr, bool blink);
+void clear_typewrite_layer(struct LAYER *layer, int inr);
