@@ -53,7 +53,6 @@ struct MSG *add_msg(struct MSG *buf, char *msg)
 		p = &(*p)->next;
 	}
 	return ret;
-	return buf;
 }
 
 void print_msg(struct MSG *msg, int x_offset, int y_offset)
