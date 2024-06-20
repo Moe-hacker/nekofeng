@@ -60,6 +60,7 @@ static void print_layer(struct LAYER *layer)
 			printf("\033[1C");
 		}
 	}
+	printf("\033[0m");
 	fflush(stdout);
 }
 void play_action(struct ACTION *action, int inr, int keep)

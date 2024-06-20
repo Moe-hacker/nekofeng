@@ -21,6 +21,10 @@ struct ACTION {
 	struct ACTION *prior;
 	struct ACTION *next;
 };
+struct MSG {
+	char *msg;
+	struct MSG *next;
+};
 extern int x;
 extern int y;
 static void clear_layer(struct LAYER *layer);
@@ -34,3 +38,8 @@ void close_and_open_lefteye(int keep);
 void close_and_open_righteye(int keep);
 void typewrite_layer(struct LAYER *layer, int inr, bool blink);
 void clear_typewrite_layer(struct LAYER *layer, int inr);
+struct MSG *init_msg_buffer(int num);
+void print_msg(struct MSG *msg, int x_offset, int y_offset);
+void clear_msg(struct MSG *msg, int x_offset, int y_offset);
+struct MSG *add_msg(struct MSG *buf, char *msg);
+void free_msg(struct MSG *msg);

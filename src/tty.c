@@ -89,19 +89,19 @@ void typewrite_layer(struct LAYER *layer, int inr, bool blink)
 			if (blink) {
 				printf("#");
 				fflush(stdout);
-				usleep(inr / 4);
+				usleep(inr / 8);
 				printf("\033[1D");
 				printf("£");
 				fflush(stdout);
-				usleep(inr / 4);
+				usleep(inr / 8);
 				printf("\033[1D");
 				printf("&");
 				fflush(stdout);
-				usleep(inr / 4);
+				usleep(inr / 8);
 				printf("\033[1D");
 				printf("┗");
 				fflush(stdout);
-				usleep(inr / 4);
+				usleep(inr / 8);
 				printf("\033[1D");
 			}
 			printf("%c", layer->layer[i]);

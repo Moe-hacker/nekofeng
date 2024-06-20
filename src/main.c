@@ -31,23 +31,40 @@ void test2()
 }
 int main()
 {
-	struct LAYER layer;
-	layer.layer = "\033[1;38;2;254;228;208m\n"
-		      "          Keep moe.\n"
-		      "          Keep cool.\n"
-		      "         Keep hacking.\n"
-		      "Keep on the side of technology.\n\n"
-		      "      But talk is cheap,\n"
-		      "       Show me the code.\n";
-	layer.x_offset = 3;
-	layer.y_offset = 0;
-	printf("\033[?25l");
-	typewrite_layer(&layer, 100000, true);
-	sleep(2);
-	clear_typewrite_layer(&layer, 50000);
-	printf("\033[?25h");
+	struct MSG *msg = init_msg_buffer(5);
+	msg = add_msg(msg, "1gdhshsgsg");
+	print_msg(msg, 0, 0);
+	msg = add_msg(msg, "2gdhshsgsg");
+	print_msg(msg, 0, 0);
+	msg = add_msg(msg, "3gdhshsgsg");
+	print_msg(msg, 0, 0);
+	msg = add_msg(msg, "4gdhshsgsg");
+	print_msg(msg, 0, 0);
+	msg = add_msg(msg, "5gdhshsgsg");
+	print_msg(msg, 0, 0);
+	msg = add_msg(msg, "6gdhshsgsg");
+	print_msg(msg, 0, 0);
+	msg = add_msg(msg, "7gdhshsgsg");
+	print_msg(msg, 0, 0);
+	free_msg(msg);
 	/*
-		sleep(10);
+		struct LAYER layer;
+		layer.layer = "\033[1;38;2;254;228;208m\n"
+			      "          Keep moe.\n"
+			      "          Keep cool.\n"
+			      "         Keep hacking.\n"
+			      "Keep on the side of technology.\n\n"
+			      "      But talk is cheap,\n"
+			      "       Show me the code.\n";
+		layer.x_offset = 3;
+		layer.y_offset = -2;
+		printf("\033[?25l");
+		typewrite_layer(&layer, 100000, true);
+		sleep(2);
+		clear_typewrite_layer(&layer, 50000);
+	*/
+	/*
+		printf("\033[?25l");
 		pid_t pid = fork();
 		if (pid == 0) {
 			test();
@@ -62,5 +79,6 @@ int main()
 		} else {
 			waitpid(pid, NULL, WNOHANG);
 		}
+		sleep(10);
 	*/
 }
