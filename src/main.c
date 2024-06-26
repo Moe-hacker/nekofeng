@@ -32,20 +32,20 @@ void test2()
 int main()
 {
 	struct MSG *msg = init_msg_buffer(5);
-	msg = add_msg(msg, "1gdhshsgsg");
-	print_msg(msg, 0, 0);
-	msg = add_msg(msg, "2gdhshsgsg");
-	print_msg(msg, 0, 0);
-	msg = add_msg(msg, "3gdhshsgsg");
-	print_msg(msg, 0, 0);
-	msg = add_msg(msg, "4gdhshsgsg");
-	print_msg(msg, 0, 0);
-	msg = add_msg(msg, "5gdhshsgsg");
-	print_msg(msg, 0, 0);
+	msg = add_msg(msg, "1gdhshersgegegwetgetgegegegwsg");
+	print_msg(msg, -30, 5);
+	msg = add_msg(msg, "2gdhsrehsgsg");
+	print_msg(msg, -30, 5);
+	msg = add_msg(msg, "3gdhscrr32c2cr2rhsgsg");
+	print_msg(msg, -30, 5);
+	msg = add_msg(msg, "4gdhshsgrgesg");
+	print_msg(msg, -30, 5);
+	msg = add_msg(msg, "5gdhshcrecr2sgsg");
+	print_msg(msg, -30, 5);
 	msg = add_msg(msg, "6gdhshsgsg");
-	print_msg(msg, 0, 0);
-	msg = add_msg(msg, "7gdhshsgsg");
-	print_msg(msg, 0, 0);
+	print_msg(msg, -30, 5);
+	msg = add_msg(msg, "7gdhshcr2r3c3r3cr34csgsg");
+	print_msg(msg, -30, 5);
 	free_msg(msg);
 	/*
 		struct LAYER layer;

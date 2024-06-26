@@ -103,7 +103,7 @@ void free_action(struct ACTION *action)
 		free(t);
 	}
 }
-struct ACTION *add_layer(struct ACTION *action, int x_offset, int y_offset, char *layer)
+struct ACTION *add_action(struct ACTION *action, int x_offset, int y_offset, char *layer)
 {
 	struct ACTION **p = &action;
 	struct ACTION *prior = action;
